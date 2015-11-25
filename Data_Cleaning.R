@@ -8,6 +8,7 @@ FRL_2010 <- read.csv(file="./Data/2010_k_12_FRL.csv", header=TRUE, sep=",", stri
 Remediation_2010 <- read.csv(file="./Data/2010_remediation_HS.csv", header=TRUE, sep=",", stringsAsFactors = FALSE)
 Address_2010 <- read.csv(file="./Data/2010_school_address.csv", header=TRUE, sep=",", stringsAsFactors = FALSE)
 
+
 # Change_2010 : 1 & 3 year changes in academic acheivement, growth, overall grade.
 # Coact_2010 : Ready for college or not based on ACT (Yes=1,No=2)
 # DataMap_2010 : 
@@ -63,13 +64,13 @@ Total_2010 <- merge(Total_2010,Remediation_2010_new,
                     all.x = TRUE)
 Total_2010_Names <- colnames(Total_2010)
 
-write.table(Total_2010_Names,file="Total_2010_Names.csv", row.names=FALSE,col.names=FALSE,sep=",")
-write.table(Total_2010,file="Total_2010.csv", row.names=FALSE,col.names=FALSE,sep=",")
+write.table(Total_2010_Names,file="./CleanedData/Total_2010_Names.csv", row.names=FALSE,col.names=FALSE,sep=",")
+write.table(Total_2010,file="./CleanedData/Total_2010.csv", row.names=FALSE,col.names=FALSE,sep=",")
 
 #-------------Clean the data-------------------#
 #Get rid of unnecessary data
 Data_2010 <- Total_2010[,-(8:15)]
-changeName <- read.csv(file="./Raw_Data_Names.csv", header=TRUE, sep=",", stringsAsFactors = FALSE)
+changeName <- read.csv(file="./CleanedData/Raw_Data_Names.csv", header=TRUE, sep=",", stringsAsFactors = FALSE)
 
 #Clean up the column names
 require(plyr)
@@ -82,6 +83,27 @@ Data_2010[,35] <- as.numeric(sub("%", "", Data_2010[,35]),na.rm = TRUE)
 Data_2010_Names <- colnames(Data_2010)
 Data_2010_Type = sapply(Data_2010, class) 
 
-write.table(Data_2010_Names,file="Data_2010_Names.csv", row.names=FALSE,col.names=FALSE,sep=",")
-write.table(Data_2010,file="Data_2010.csv", row.names=FALSE,col.names=FALSE,sep=",")
-write.table(Data_2010_Type,file="Data_2010_Type.csv", row.names=FALSE,col.names=FALSE,sep=",")
+write.table(Data_2010_Names,file="./CleanedData/Data_2010_Names.csv", row.names=FALSE,col.names=FALSE,sep=",")
+write.table(Data_2010,file="./CleanedData/Data_2010.csv", row.names=FALSE,col.names=FALSE,sep=",")
+write.table(Data_2010_Type,file="./CleanedData/Data_2010_Type.csv", row.names=FALSE,col.names=FALSE,sep=",")
+
+
+
+
+#--------------------------------------------------------------
+
+#Get GPS data
+GPS <- read.csv(file="./Data/school_gps_coordinates.csv", header=TRUE, sep=",", stringsAsFactors = FALSE)
+
+#Combine GPS data for only those with the data
+GPS_new <- GPS[,-which(names(GPS) %in% "School.Name")]
+Data_2010_GPS <- merge(Data_2010,GPS_new,
+                       by.x="SchoolNumber",by.y="School.Number")
+colnames(Data_2010_GPS) <- mapvalues(colnames(Data_2010_GPS),from="Lattitude", to ="Latitude")
+
+interested = c("SchoolNumber","EMH","SchoolName","DistrictNumber",
+               "SchoolGrade","PercentAmericanIndian","PercentAsian","PercentBlack",
+               "PercentHispanic","PercentWhite","PercentFreeOrReducedLunch",
+               "RemediationRate","Latitude","Longitude")
+Data_2010_GPS = Data_2010_GPS[,which(colnames(Data_2010_GPS) %in% interested)]
+
