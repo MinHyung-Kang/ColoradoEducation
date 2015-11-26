@@ -66,7 +66,6 @@ Total_2011 <- merge(Total_2011,Remediation_2011_new,
 Total_2011_Names <- colnames(Total_2011)
 
 write.table(Total_2011_Names,file="./CleanedData/Total_2011_Names.csv", row.names=FALSE,col.names=FALSE,sep=",")
-#write.table(Total_2010,file="Total_2010.csv", row.names=FALSE,col.names=FALSE,sep=",")
 
 #-------------Clean the data-------------------#
 #Get rid of unnecessary data
